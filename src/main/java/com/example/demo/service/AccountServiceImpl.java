@@ -24,10 +24,9 @@ public class AccountServiceImpl implements  AccountService {
     }
 
     @Override
-    public AppUser saveUser (String username,String password , String confirmedPassword){
+    public AppUser saveUser (String username,String password){
         AppUser  user=appUserRepository.findByUsername(username);
         if(user!=null) throw new RuntimeException("user already exists");
-        if(!password.equals(confirmedPassword)) throw new RuntimeException("please cofirm your password");
         AppUser appUser=new AppUser();
         appUser.setUsername(username);
         appUser.setActived(true);
@@ -49,5 +48,14 @@ public class AccountServiceImpl implements  AccountService {
         AppUser appUser=appUserRepository.findByUsername(username);
         AppRole appRole=appRoleRepository.findByRoleName(rolename);
         appUser.getRoles().add(appRole);
+    }
+
+    @Override
+    public AppUser updatePassword(String username, String password) {
+        AppUser user=appUserRepository.findByUsername(username);
+        if(user==null) throw new RuntimeException("user does not exist");
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        appUserRepository.save(user);
+        return null;
     }
 }
